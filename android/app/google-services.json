@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "168533321100",
+    "project_id": "adsapp-c45fb",
+    "storage_bucket": "adsapp-c45fb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:168533321100:android:e4011fc0f50205b82662a9",
+        "android_client_info": {
+          "package_name": "com.inv.adsapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "168533321100-tl93feq88d72924mmprpgegsfoafqr19.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARajH8nGO0OKxfRsQtYIJKW9uKCyEdQEA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "168533321100-tl93feq88d72924mmprpgegsfoafqr19.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
