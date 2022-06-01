@@ -1,5 +1,7 @@
+import 'package:adsapp/Service/AuthenticationServices.dart';
 import 'package:adsapp/constants.dart';
 import 'package:adsapp/size_config.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -14,6 +16,8 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _resend = false;
   bool _loading = false;
   String _phone = "";
+  late String _verificationCode;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,8 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           )
                         : _phoneWidget(),
                     SizedBox(height: 20),
-                    _flag
-                        ? SizedBox(
+                    if (_flag) SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: () {
@@ -109,7 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   (route) => false,
                                 );
                               },
-                             child: Text(
+                              child: Text(
                                 "Verify & Proceed",
                                 style: TextStyle(
                                   color: Colors.black,
@@ -122,15 +125,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                 padding: EdgeInsets.symmetric(vertical: 12),
                               ),
                             ),
-                          )
-                        : SizedBox(
+                          ) else SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: () {
                                 // if (_phone.length == 10)
-                                  setState(() {
-                                    _flag = true;
-                                  });
+                                setState(() {
+                                  _flag = true;
+                                  // AuthenticationServices.createUserWithPhone(_phone,context);
+                                });
                               },
                               child: Text(
                                 "Send OTP",
@@ -153,10 +156,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: Text(
                               "Don't received the OTP? Resend OTP",
                               style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 16,
-                            ),
-                            textAlign: TextAlign.center,
+                                color: Colors.white70,
+                                fontSize: 16,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
                           )
                         : Text(
@@ -199,7 +202,7 @@ class _LoginScreenState extends State<LoginScreen> {
         style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
         decoration: InputDecoration(
           filled: true,
-          fillColor: Colors.white.withOpacity(0.3), 
+          fillColor: Colors.white.withOpacity(0.3),
           hintStyle: TextStyle(color: Colors.white54),
           hintText: "-",
           counterText: "",
@@ -208,6 +211,34 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  _verifyPhone() async {
+    await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: '+91 $_phone',
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          await FirebaseAuth.instance
+              .signInWithCredential(credential)
+              .then((value) async {
+            if (value.user != null) {
+              print("User Logged in");
+            }
+          });
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          print(e.message);
+        },
+        codeSent: (String verificationID,int ){
+          setState(() {
+            _verificationCode = verificationID;
+          });
+        },
+        codeAutoRetrievalTimeout: (String verificationID) {
+          setState(() {
+            _verificationCode = verificationID;
+          });
+        },
+        timeout: Duration(seconds: 60));
   }
 
   TextFormField _phoneWidget() {

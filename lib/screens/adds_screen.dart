@@ -1,5 +1,11 @@
+import 'package:adsapp/DatabaseManager/DatabaseManager.dart';
+import 'package:adsapp/components/StoreWidget.dart';
 import 'package:adsapp/constants.dart';
+import 'package:adsapp/models/Coupons.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+
+import '../models/Store.dart';
 
 class AddsScreen extends StatefulWidget {
   const AddsScreen({Key? key}) : super(key: key);
@@ -10,13 +16,27 @@ class AddsScreen extends StatefulWidget {
 
 class _AddsScreenState extends State<AddsScreen> {
   String _appBarTitle = "Company Name";
+  List a = [];
   @override
   void initState() {
     super.initState();
     // final args = ModalRoute.of(context)!.settings.arguments as Map;
     // args
+    fetchCoupons();
   }
 
+  fetchCoupons() async{
+    dynamic result = await getCategories();
+    if(result == null)
+      {
+        print("Null");
+      }
+    else{
+      setState((){
+        a = result;
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -24,21 +44,24 @@ class _AddsScreenState extends State<AddsScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(_appBarTitle),
-          bottom: TabBar(
-            indicatorColor: Colors.grey,
-            tabs: [
-              Tab(child: Text("Coupons", style: mTitleStyle)),
-              Tab(child: Text("Deals", style: mTitleStyle)),
-            ],
-          ),
         ),
-        body: TabBarView(
-          children: [
-            Center(child: Text("Coupons")),
-            Center(child: Text("Deals"))
-          ],
-        ),
+        body: Container(
+          child:ListView.builder(
+            itemCount: a.length,
+            itemBuilder: (context,index){
+              return StoreWidget(store: a[index]);
+            },
+          )
+        )
       ),
     );
+  }
+  Future getCategories() async {
+    var data = await FirebaseFirestore.instance.collection("Coupons").doc(
+        "data").collection("categories").orderBy('title').get();
+    setState((){
+      a = List.from(data.docs.map((e) => Coupons.fromSnapshot(e)));
+    });
+    return a;
   }
 }

@@ -198,7 +198,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             StoreWidget(
-                store: Store("Amazon", "Shopping", "assets/images/amazon.png"))
+                store: Store(image: 'assets/images/amazon.png', title: 'Amazon', subtitle: 'Shopping')
+            )
           ],
         ),
       ),
